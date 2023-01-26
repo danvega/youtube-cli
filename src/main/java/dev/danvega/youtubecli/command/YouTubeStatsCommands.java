@@ -1,11 +1,16 @@
 package dev.danvega.youtubecli.command;
 
+import dev.danvega.youtubecli.model.TeamTabRow;
 import dev.danvega.youtubecli.model.Video;
 import dev.danvega.youtubecli.service.VideoService;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.table.ArrayTableModel;
+import org.springframework.shell.table.BorderStyle;
+import org.springframework.shell.table.TableBuilder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ShellComponent
@@ -18,28 +23,48 @@ public class YouTubeStatsCommands {
     }
 
     @ShellMethod(value = "All Videos")
-    public void allVideos() {
+    public void all() {
         List<Video> videos = videoService.findAll();
-        for (int i=0; i< videos.size(); ++i) {
-            Video v = videos.get(i);
-            System.out.println(i+1 + ": " + v.snippet().title() + " | " + v.id());
-        }
+        TableBuilder tableBuilder = listToArrayTableModel(videos);
+        System.out.println(tableBuilder.build().render(120));
     }
 
     @ShellMethod(value = "Recent Videos")
-    public List<Video> recentVideos(@ShellOption(defaultValue = "5") Integer max) {
-        return videoService.findRecent(max);
+    public void recent(@ShellOption(defaultValue = "5") Integer max) {
+        List<Video> videos = videoService.findRecent(max);
+        TableBuilder tableBuilder = listToArrayTableModel(videos);
+        System.out.println(tableBuilder.build().render(120));
     }
 
-    @ShellMethod(value = "Tasha Report")
-    public Video tashaReport(@ShellOption() String videoId) {
-        return null;
+    @ShellMethod(value = "Report")
+    public void report() {
+        List<Video> videos = videoService.findAllByYear(LocalDateTime.now().getYear());
+        List<TeamTabRow> rows = videos.stream()
+                .map(video -> new TeamTabRow(video.snippet().title(),
+                        "YouTube",
+                        video.snippet().publishedAt().toLocalDate(),
+                        video.snippet().publishedAt().toLocalDate(),
+                        "Virtual",
+                        "Y",
+                        video.statistics().viewCount(),
+                        video.statistics().viewCount(),
+                        video.snippet().description(),
+                        "n/a",
+                        "n/a"))
+                .toList();
+
+        rows.forEach(TeamTabRow::print);
     }
 
-    // get video details by id
 
-    // find all videos by year | current y
 
-    // find all videos by date range
+    private TableBuilder listToArrayTableModel(List<Video> videos) {
+        ArrayTableModel model = new ArrayTableModel(videos.stream()
+                .map(v -> new String[]{v.id(), v.snippet().title(), v.snippet().publishedAt().toString()})
+                .toArray(String[][]::new));
+        TableBuilder tableBuilder = new TableBuilder(model);
+        tableBuilder.addInnerBorder(BorderStyle.fancy_light_double_dash);
+        return tableBuilder;
+    }
 
 }

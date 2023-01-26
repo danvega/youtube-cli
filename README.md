@@ -9,3 +9,8 @@ TODO:
     - https://console.cloud.google.com/
   - How to run the app
   - How it works
+- Additional Commands
+  - Report export & view
+  - Get video details by id
+  - Find all videos by year | current year is default
+  - Find all videos by date range
