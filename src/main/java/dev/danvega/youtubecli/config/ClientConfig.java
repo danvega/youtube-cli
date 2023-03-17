@@ -12,7 +12,9 @@ public class ClientConfig {
 
     @Bean
     public HttpServiceProxyFactory httpServiceProxyFactory() {
-        WebClient client = WebClient.builder().baseUrl("https://youtube.googleapis.com/youtube/v3").build();
+        WebClient client = WebClient.builder()
+                .baseUrl("https://youtube.googleapis.com/youtube/v3")
+                .build();
         return HttpServiceProxyFactory.builder(WebClientAdapter.forClient(client)).build();
     }
 

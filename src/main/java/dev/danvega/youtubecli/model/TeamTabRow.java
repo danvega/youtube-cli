@@ -17,7 +17,7 @@ public record TeamTabRow(
 ) {
 
     public void print() {
-        String shortDesc = content.substring(0,100).replaceAll(",","");
+        String shortDesc = content.length() > 50 ? content.substring(0,50).replaceAll(",","") : content;
         System.out.printf("%s,%s,%s,%s,%s,%s,%d,%d,%s,%s,%s%n",event,type,startDate,endDate,location,confirmed,eyeballsLive,eyeballsReplay,shortDesc,contact,notes);
     }
 }
