@@ -86,7 +86,7 @@ public class VideoService {
 
         // recursively call this method until there are no more pages
         if(search.nextPageToken() != null && !search.nextPageToken().isEmpty()) {
-            loadAllVideos(search.nextPageToken());
+            loadAllVideosThisYear(search.nextPageToken());
         }
 
     }
